@@ -31,6 +31,10 @@
     function failureHandler(err) {
       return err;
     }
+
+    $this.removeItem = function (index) {
+      $this.foundItems.splice(index, 1);
+    };
   }
 
   MenuSearchService.$inject = ['$http'];
