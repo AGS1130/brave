@@ -50,59 +50,36 @@
     }
 
     service.parseQuery = function (data, query) {
-      var checkIfNum = !isNaN(parseInt(query));
-      var foundData = checkIfNum ? resolveNumberQuery(data, query) : resolveStringQuery(data, query);
+      var checkIfNum = !isNaN(parseFloat(query));
+      var foundData = resolveQuery(checkIfNum, data, query);
 
       return foundData;
     }
   }
 
-  function resolveNumberQuery(data, query) {
+  function resolveQuery(ifNum, data, query) {
     var foundData = [];
-    var numQuery = parseFloat(query);
+    var sanitizedQuery = ifNum ? parseFloat(query) : sanitizeString(query);
 
-    angular.forEach(data, function (value) {
-      var hasId = value.id && value.id === numQuery;
-      var priceIsLarge = value.price_large && Math.round(value.price_large) === Math.round(numQuery);
-      var priceIsSmall = value.price_small && Math.round(value.price_small) === Math.round(numQuery);
+    angular.forEach(data, function (dataObj) {
+      var dataIn = false;
+      angular.forEach(dataObj, function (value) {
+        var finalCondition;
 
-      if (hasId) {
-        foundData.push(value);
-      } else if (priceIsLarge) {
-        foundData.push(value);
-      } else if (priceIsSmall) {
-        foundData.push(value);
-      }
+        if(ifNum && typeof value === 'number'){
+          finalCondition = value === sanitizedQuery || Math.round(value) === Math.round(sanitizedQuery);
+        } else if(!ifNum && typeof value === 'string') {
+          finalCondition = sanitizeString(value).indexOf(sanitizedQuery) !== -1;
+        }
+
+        if (!dataIn && finalCondition) {
+          foundData.push(dataObj);
+          dataIn = true;
+        }
+      })
     });
 
-    return foundData;
-  }
-
-  function resolveStringQuery(data, query) {
-    var foundData = [];
-    var sanitizedQuery = sanitizeString(query);
-
-    if (sanitizedQuery.length) {
-      angular.forEach(data, function (value) {
-        var hasName = value.name && sanitizeString(value.name).indexOf(sanitizedQuery) !== -1;
-        var hasShortName = value.short_name && sanitizeString(value.short_name).indexOf(sanitizedQuery) !== -1;
-        var hasDescription = value.description && sanitizeString(value.description).indexOf(sanitizedQuery) !== -1;
-        var hasLargePortion = value.large_portion_name && sanitizeString(value.large_portion_name).indexOf(sanitizedQuery) !== -1;
-        var hasSmallPortion = value.small_portion_name && sanitizeString(value.small_portion_name).indexOf(sanitizedQuery) !== -1;
-
-        if (hasName) {
-          foundData.push(value);
-        } else if (hasShortName) {
-          foundData.push(value);
-        } else if (hasDescription) {
-          foundData.push(value);
-        } else if (hasLargePortion) {
-          foundData.push(value);
-        } else if (hasSmallPortion) {
-          foundData.push(value);
-        }
-      });
-    }
+    console.log(foundData)
 
     return foundData;
   }
