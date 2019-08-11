@@ -1,0 +1,9 @@
+<h3 ng-if="ctrl.foundItems === undefined || ctrl.foundItems.length === 0">
+  Nothing found
+</h3>
+<ol ng-if="ctrl.foundItems !== undefined && ctrl.foundItems.length !== 0">
+  <li ng-repeat="item in ctrl.foundItems">
+      ({{item.short_name}}) {{item.name}}:  {{item.description}}
+    <button class="btn btn-danger" ng-click="ctrl.removeItem($index);">Don't want this one!</button>
+  </li>
+</ol>

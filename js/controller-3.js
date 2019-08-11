@@ -3,27 +3,29 @@
 
   angular.module('NarrowItDownApp', [])
     .controller('NarrowItDownController', NarrowItDownController)
-    .service('MenuSearchService', MenuSearchService);
+    .service('MenuSearchService', MenuSearchService)
+    .directive('foundItems', FoundItemsDirective);
 
-  NarrowItDownController.$inject = ['$scope', 'MenuSearchService'];
-  function NarrowItDownController($scope, MenuSearchService) {
-    $scope.query = '';
-    var found;
+  NarrowItDownController.$inject = ['MenuSearchService'];
+  function NarrowItDownController(MenuSearchService) {
+    var $this = this;
+    $this.query = '';
+    $this.found;
 
-    $scope.getData = function () {
-      var query = $scope.query;
+    $this.getData = function () {
+      var query = $this.query;
 
-      if (!found) {
+      if (!$this.found) {
         MenuSearchService.getMatchedMenuItems(successHandler, failureHandler);
-      } else if (found.length) {
-        var returnRes = MenuSearchService.parseQuery(found, query);
+      } else if ($this.found.length) {
+        $this.foundItems = MenuSearchService.parseQuery($this.found, query);
       }
     }
 
     function successHandler(res) {
-      var query = $scope.query;
-      found = res;
-      var returnRes = MenuSearchService.parseQuery(found, query);
+      var query = $this.query;
+      $this.found = res;
+      $this.foundItems = MenuSearchService.parseQuery($this.found, query);
     }
 
     function failureHandler(err) {
@@ -57,6 +59,22 @@
     }
   }
 
+  function FoundItemsDirective() {
+    var ddo = {
+      templateUrl: '../templates/page-3-template.html',
+      scope: {
+        foundItems: '<',
+        onRemove: '&'
+      },
+      restrict: 'E',
+      controller: NarrowItDownController,
+      controllerAs: 'ctrl',
+      bindToController: true
+    };
+
+    return ddo;
+  }
+
   function resolveQuery(ifNum, data, query) {
     var foundData = [];
     var sanitizedQuery = ifNum ? parseFloat(query) : sanitizeString(query);
@@ -66,9 +84,9 @@
       angular.forEach(dataObj, function (value) {
         var finalCondition;
 
-        if(ifNum && typeof value === 'number'){
+        if (ifNum && typeof value === 'number') {
           finalCondition = value === sanitizedQuery || Math.round(value) === Math.round(sanitizedQuery);
-        } else if(!ifNum && typeof value === 'string') {
+        } else if (!ifNum && typeof value === 'string') {
           finalCondition = sanitizeString(value).indexOf(sanitizedQuery) !== -1;
         }
 
