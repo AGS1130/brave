@@ -55,38 +55,62 @@
 
       return foundData;
     }
+  }
 
-    function resolveNumberQuery(data, query) {
-      var foundData = [];
-      var numQuery = parseFloat(query);
+  function resolveNumberQuery(data, query) {
+    var foundData = [];
+    var numQuery = parseFloat(query);
+
+    angular.forEach(data, function (value) {
+      var hasId = value.id && value.id === numQuery;
+      var priceIsLarge = value.price_large && Math.round(value.price_large) === Math.round(numQuery);
+      var priceIsSmall = value.price_small && Math.round(value.price_small) === Math.round(numQuery);
+
+      if (hasId) {
+        foundData.push(value);
+      } else if (priceIsLarge) {
+        foundData.push(value);
+      } else if (priceIsSmall) {
+        foundData.push(value);
+      }
+    });
+
+    return foundData;
+  }
+
+  function resolveStringQuery(data, query) {
+    var foundData = [];
+    var sanitizedQuery = sanitizeString(query).length;
+
+    if (sanitizedQuery.length) {
       angular.forEach(data, function (value) {
-        if (value.id && value.id === numQuery) {
+        var hasName = value.name && sanitizeString(value.name).indexOf(sanitizedQuery) !== -1;
+        var hasShortName = value.short_name && sanitizeString(value.short_name).indexOf(sanitizedQuery) !== -1;
+        var hasDescription = value.description && sanitizeString(value.description).indexOf(sanitizedQuery) !== -1;
+        var hasLargePortion = value.large_portion_name && sanitizeString(value.large_portion_name).indexOf(sanitizedQuery) !== -1;
+        var hasSmallPortion = value.small_portion_name && sanitizeString(value.small_portion_name).indexOf(sanitizedQuery) !== -1;
+
+        if (hasName) {
           foundData.push(value);
-        } else if (value.price_large && value.price_large === numQuery) {
+        } else if (hasShortName) {
           foundData.push(value);
-        } else if (value.price_small && value.price_small === numQuery) {
+        } else if (hasDescription) {
+          foundData.push(value);
+        } else if (hasLargePortion) {
+          foundData.push(value);
+        } else if (hasSmallPortion) {
           foundData.push(value);
         }
       });
-
-      return foundData;
     }
 
-    function resolveStringQuery(data, query) {
-      var foundData = [];
-      angular.forEach(data, function (value) {
-        if (value.name && value.name === query) {
-          foundData.push(value);
-        } else if (value.short_name && value.short_name === query) {
-          foundData.push(value);
-        } else if (value.large_portion_name && value.large_portion_name === query) {
-          foundData.push(value);
-        } else if (value.small_portion_name && value.small_portion_name === query) {
-          foundData.push(value);
-        }
-      });
+    return foundData;
+  }
 
-      return foundData;
-    }
+  function sanitizeString(query) {
+    var trimLowerCase = query.toLowerCase().trim();
+    var res = trimLowerCase.replace(/[^a-zA-Z0-9]/g, '');
+
+    return res;
   }
 })();
