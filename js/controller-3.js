@@ -79,8 +79,6 @@
       })
     });
 
-    console.log(foundData)
-
     return foundData;
   }
 
