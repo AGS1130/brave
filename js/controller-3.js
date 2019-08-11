@@ -12,18 +12,18 @@
 
     $scope.getData = function () {
       var query = $scope.query;
+
       if (!found) {
         MenuSearchService.getMatchedMenuItems(successHandler, failureHandler);
-        console.log('Called AJAX!')
-      } else if (found !== 'No Menu Items!') {
+      } else if (found.length) {
         var returnRes = MenuSearchService.parseQuery(found, query);
-        console.log(returnRes);
-        console.log('Did not call AJAX!')
       }
     }
 
     function successHandler(res) {
+      var query = $scope.query;
       found = res;
+      var returnRes = MenuSearchService.parseQuery(found, query);
     }
 
     function failureHandler(err) {
@@ -42,7 +42,7 @@
           if (payload.menu_items) {
             return successHandler(payload.menu_items);
           } else {
-            return 'No Menu Items!';
+            return [];
           }
         }).catch(function (err) {
           failureHandler(err);
@@ -80,7 +80,7 @@
 
   function resolveStringQuery(data, query) {
     var foundData = [];
-    var sanitizedQuery = sanitizeString(query).length;
+    var sanitizedQuery = sanitizeString(query);
 
     if (sanitizedQuery.length) {
       angular.forEach(data, function (value) {
