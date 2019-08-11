@@ -9,9 +9,12 @@
   ToBuyController.$inject = ['ShoppingListCheckOffService'];
   function ToBuyController(ShoppingListCheckOffService) {
     var thisController = this;
-    var shoppingList = ['cookie', 'chip', 'soda', 'apple', 'bannana', 'pear'];
+    var shoppingList = [
+      'cookie', 'chip', 'soda', 'apple',
+      'bannana', 'pear', 'cheese', 'egg',
+      'tomato', 'salt', 'pepper', 'bacon',
+      'onion'];
 
-    //
     thisController.items = ShoppingListCheckOffService.randomList(shoppingList);
     thisController.boughtItem = function (itemIndex) {
       ShoppingListCheckOffService.boughtItem(itemIndex);
