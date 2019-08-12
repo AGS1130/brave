@@ -1,9 +1,13 @@
-<h3 ng-if="ctrl.foundItems === undefined || ctrl.foundItems.length === 0">
+<h3 ng-if="ctrl.foundItems !== undefined && ctrl.foundItems.length === 0">
   Nothing found
 </h3>
 <ol ng-if="ctrl.foundItems !== undefined && ctrl.foundItems.length !== 0">
   <li ng-repeat="item in ctrl.foundItems">
-      ({{item.short_name}}) {{item.name}}:  {{item.description}}
-    <button class="btn btn-danger" ng-click="ctrl.onRemove({index: $index});">Don't want this one!</button>
+    <div class="col-sm-10 col-xs-12">
+      ({{item.short_name}}) {{item.name}}: {{item.description}}
+    </div>
+    <div class="col-sm-2 col-xs-12">
+      <button class="btn btn-danger" ng-click="ctrl.onRemove({index: $index});">Don't want this one!</button>
+    </div>
   </li>
 </ol>
