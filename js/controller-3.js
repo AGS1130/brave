@@ -83,6 +83,10 @@
     var foundData = [];
     var sanitizedQuery = ifNum ? parseFloat(query) : sanitizeString(query);
 
+    if(!ifNum && query.length === 0) {
+      return foundData;
+    }
+
     angular.forEach(data, function (dataObj) {
       var dataIn = false;
       angular.forEach(dataObj, function (value) {
